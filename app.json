@@ -1,5 +1,10 @@
 {
   "expo": {
+    "host": "lan",
+    "jsEngine": "hermes",
+    "ios": {
+      "supportsTablet": true
+    },
     "name": "AccessControl",
     "slug": "AccessControl",
     "version": "1.0.0",
@@ -13,15 +18,13 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "ios": {
-      "supportsTablet": true
-    },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.anonymous.AccessControl"
     },
     "web": {
       "bundler": "metro",
