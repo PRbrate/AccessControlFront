@@ -1,5 +1,5 @@
 import Colors from "@/constants/colors";
-import { View, Text, TextInput, Pressable, Alert } from "react-native";
+import { View, Text, TextInput, Pressable, Image } from "react-native";
 import { router } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
@@ -10,6 +10,10 @@ import getAdress from "@/src/services/getAddresService";
 import { postUserData } from "@/src/services/userService";
 import SpinIcon from "@/components/spin";
 import { useAuth } from "@/src/context/AuthContext";
+import { pickImage } from "@/src/services/galeryService";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import colors from "@/constants/colors";
+import { postImage } from "@/src/services/clouflareService";
 
 export default function Register() {
   const { dataReturn } = useAuth();
@@ -30,11 +34,28 @@ export default function Register() {
   const [onClickButtonCep, setClicButtoncep] = useState(false);
   const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
+  const [image, setImagem] = useState<string | null>(null);
 
   useEffect(() => {
     if (dataReturn != null || dataReturn != undefined)
       router.push("/(panel)/profile/page");
   }, []);
+
+  async function getImage() {
+    const returnpik = await pickImage();
+
+    returnpik?.uri
+    if (typeof returnpik !== "undefined") {
+      // console.log(returnpik)
+      setImagem(returnpik?.uri);
+
+      const url =
+        "https://9f840390300c67d6cd3466e54c8720e6.r2.cloudflarestorage.com/eventbucket/teste12?X-Amz-Expires=120&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=320433a469b46b78a06fb24bfe543a52%2F20250811%2Fauto%2Fs3%2Faws4_request&X-Amz-Date=20250811T200744Z&X-Amz-SignedHeaders=content-type%3Bhost&X-Amz-Signature=803db91dff835fcb91fcbe11fbfaca311201752054eb7ef067bc7cc39fb3d82f";
+
+        if(returnpik) await postImage({url: url, asset: returnpik})
+    }
+  }
+
   async function getAddres() {
     const returnCep = await getAdress(postalCode);
     setClicButtoncep(true);
@@ -48,12 +69,11 @@ export default function Register() {
       setUF(returnCep.uf);
     }
 
-    setClicButtoncep(false)
+    setClicButtoncep(false);
   }
 
   async function postUser() {
-
-    setClicButton(true)
+    setClicButton(true);
 
     if (name == "" || userName == "" || email == "" || password == "") {
       setReturnError(true);
@@ -61,7 +81,7 @@ export default function Register() {
         success: false,
         errors: ["nome, usuário, email e senha devem ser preenchidos"],
       });
-      setClicButton(false)
+      setClicButton(false);
       return;
     }
     if (emailRegex.test(email) == false) {
@@ -120,6 +140,27 @@ export default function Register() {
             </Pressable>
             <Text style={styles.logoText}>PRbrate</Text>
           </View>
+        </View>
+
+        <View
+          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+        >
+          <Pressable onPress={getImage} style={styles.postImage}>
+            {image ? (
+              <Image
+                source={{ uri: image }}
+                style={{ width: 140, height: 140, borderRadius: 100 }}
+              />
+            ) : (
+              <View style={styles.postImageRouded}>
+                <MaterialIcons
+                  name="person-add-alt-1"
+                  size={30}
+                  color={colors.secundatyBlue}
+                />
+              </View>
+            )}
+          </Pressable>
         </View>
         <View style={styles.form}>
           <Text style={styles.tumb}>Cadastro</Text>

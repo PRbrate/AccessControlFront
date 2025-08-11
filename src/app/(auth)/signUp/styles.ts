@@ -1,5 +1,6 @@
 import {  StyleSheet} from "react-native";
 import Colors from "@/constants/colors";
+import colors from "@/constants/colors";
 
 
 export const styles = StyleSheet.create({
@@ -24,13 +25,31 @@ export const styles = StyleSheet.create({
     fontSize: 40,
     fontWeight: "bold",
     color: Colors.black,
-    marginBottom: 50,
+  },
+  postImage: {
+    borderWidth: 2,
+    borderColor: colors.secundatyBlue,
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 100,
+    width: 150,
+    height: 150,
+    margin: 10,
+  },
+  postImageRouded: {
+    borderWidth: 2,
+    alignItems: "center",
+    justifyContent: "center",
+    borderColor: colors.secundatyBlue,
+    borderStyle: "dashed",
+    borderRadius: 100,
+    width: 140,
+    height: 140,
   },
   backButton: {
     alignSelf: "flex-start",
     padding: 8,
     borderRadius: 8,
-    marginBottom: 8,
   },
   iconLogo: {
     width: "100%",
@@ -92,7 +111,7 @@ export const styles = StyleSheet.create({
     flexDirection: "row",
     width: "100%",
     justifyContent: "space-between",
-    flexWrap: "wrap"
+    flexWrap: "wrap",
   },
   ViewCep: {
     width: "65%",
@@ -127,7 +146,7 @@ export const styles = StyleSheet.create({
     borderRadius: 14,
     justifyContent: "center",
     width: "100%",
-    marginBottom: 35
+    marginBottom: 35,
   },
 
   buttonText: {

@@ -68,7 +68,7 @@ export default function Profile() {
                   borderRadius: 30,
                 }}
                 source={{
-                  uri: "https://t4.ftcdn.net/jpg/03/64/21/11/360_F_364211147_1qgLVxv1Tcq0Ohz3FawUfrtONzz8nq3e.jpg",
+                  uri: "https://9f840390300c67d6cd3466e54c8720e6.r2.cloudflarestorage.com/eventbucket/teste?X-Amz-Expires=300&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=320433a469b46b78a06fb24bfe543a52%2F20250811%2Fauto%2Fs3%2Faws4_request&X-Amz-Date=20250811T133206Z&X-Amz-SignedHeaders=host&X-Amz-Signature=337d995df8bbcab74057884473f0cf085493effbf525679521e22d9341f2d5f0",
                 }}
               />
             </View>

@@ -10,25 +10,25 @@ import { api } from "@/src/services/api";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import styles from "./styles";
 import { erroProps } from "@/src/types/errorTypes";
-
+import { loginUser } from "@/src/services/userService";
 
 export default function Login() {
   const { login, dataReturn } = useAuth();
   const [userName, setUserName] = useState("");
-  const [password, setPassWord] = useState("");
+  const [passWord, setPassWord] = useState("");
   const [erros, setErrors] = useState<erroProps>();
   const [returnError, setReturnError] = useState(false);
   const [onClickButton, setClicButton] = useState(false);
 
-  useEffect(()=>{
-        if(dataReturn != null || dataReturn != undefined) router.push("/(panel)/profile/page")
-
-  }, [])
+  useEffect(() => {
+    if (dataReturn != null || dataReturn != undefined)
+      router.push("/(panel)/profile/page");
+  }, []);
 
   async function getUser() {
     setClicButton(true);
 
-    if (userName.length < 2 || password.length < 8) {
+    if (userName.length < 2 || passWord.length < 8) {
       setReturnError(true);
       setErrors({
         success: false,
@@ -39,45 +39,18 @@ export default function Login() {
       return;
     }
 
-    try {
-      const response = await api.post(
-        "Auth/login",
-        {
-          userName: userName,
-          password: password,
-        },
-        { timeout: 5000 }
-      );
+    const response = await loginUser({ userName, passWord });
 
-      if (response?.data?.data?.accessToken) {
-        login(response?.data.data);
-        router.push("/(panel)/profile/page");
-        setClicButton(false);
-        setReturnError(true);
-      }
-    } catch (error: any) {
-      setClicButton(false);
+    if ("errors" in response) {
+      setErrors(response);
       setReturnError(true);
-      if (axios.isCancel(error)) {
-        setReturnError(true);
-        setErrors({ success: false, errors: ["servidor fora do ar"] });
-      } else {
-        if (error.response) {
-          setReturnError(true);
-          const errors = error.response.data;
-          setErrors(errors);
-          setClicButton(false);
-        }
-      }
-      if (error.response?.data) {
-        setErrors(error.response.data);
-      } else {
-        setErrors({
-          success: false,
-          errors: ["Erro ao se conectar com o servidor"],
-        });
-      }
+      setClicButton(false);
+    } else {
+      console.log(response);
+      login(response);
+      router.push("/(panel)/profile/page");
     }
+    setClicButton(false);
   }
 
   return (
@@ -120,7 +93,7 @@ export default function Login() {
                 style={styles.inputlabel}
                 placeholder="**********"
                 secureTextEntry
-                value={password}
+                value={passWord}
                 onChangeText={setPassWord}
               />
             </View>

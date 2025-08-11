@@ -3,6 +3,10 @@
     "host": "lan",
     "jsEngine": "hermes",
     "ios": {
+      "infoPlist" :{
+        "NSCameraUsageDescription": "Precisamos acessar sua câmera para tirar fotos",
+        "NSPhotoLibraryUsageDescription": "Precisamos acessar sua galeria para escolher imagens"
+      },
       "supportsTablet": true
     },
     "name": "AccessControl",
