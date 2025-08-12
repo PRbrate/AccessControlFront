@@ -18,21 +18,34 @@ import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useAuth } from "@/src/context/AuthContext";
 import { router } from "expo-router";
 import colors from "@/constants/colors";
+import { useEffect, useState } from "react";
+import { setupApiToken, setupResponseInterceptor } from "@/src/services/api";
+import { getImageProfile } from "@/src/services/clouflareService";
 
 export default function Profile() {
   const { dataReturn, logout } = useAuth();
+  const [photoProfile, setProtoProfile] = useState("");
+
+  useEffect(() => {
+
+    (async () => {
+      setupApiToken(dataReturn?.accessToken);
+      setupResponseInterceptor(logout);
+      setProtoProfile(await getImageProfile());
+    })();
+  }, [dataReturn?.accessToken, logout]);
 
   function logoutRedirect() {
     logout();
     router.push("/(auth)/signIn/page");
   }
 
-  function firshName(): string{
+  function firshName(): string {
     if (dataReturn?.userDto != null) {
       const separetefishName = dataReturn?.userDto?.name.split(" ");
       return separetefishName[0];
     }
-    return " "
+    return " ";
   }
 
   return (
@@ -68,7 +81,7 @@ export default function Profile() {
                   borderRadius: 30,
                 }}
                 source={{
-                  uri: "https://9f840390300c67d6cd3466e54c8720e6.r2.cloudflarestorage.com/eventbucket/teste?X-Amz-Expires=300&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=320433a469b46b78a06fb24bfe543a52%2F20250811%2Fauto%2Fs3%2Faws4_request&X-Amz-Date=20250811T133206Z&X-Amz-SignedHeaders=host&X-Amz-Signature=337d995df8bbcab74057884473f0cf085493effbf525679521e22d9341f2d5f0",
+                  uri: photoProfile,
                 }}
               />
             </View>
@@ -97,12 +110,20 @@ export default function Profile() {
         <View style={styles.containerInfo}>
           <Text style={styles.textContainerInfo}> Eventos</Text>
           <View style={styles.containerInfoCard}>
-            <View style={styles.miniCard}>
-              <MaterialIcons name="add-chart" size={40} color={Colors.white} />
-              <Text style={[styles.textContainerInfo, { color: Colors.white }]}>
-                Criar Novo Evento
-              </Text>
-            </View>
+            <Pressable onPress={getImageProfile}>
+              <View style={styles.miniCard}>
+                <MaterialIcons
+                  name="add-chart"
+                  size={40}
+                  color={Colors.white}
+                />
+                <Text
+                  style={[styles.textContainerInfo, { color: Colors.white }]}
+                >
+                  Criar Novo Evento
+                </Text>
+              </View>
+            </Pressable>
             <View style={styles.miniCard}>
               <MaterialCommunityIcons
                 name="clipboard-list-outline"
@@ -167,7 +188,7 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderRadius: 100,
     justifyContent: "center",
-    alignItems: "center"
+    alignItems: "center",
   },
   containerSeach: {
     flex: 1,

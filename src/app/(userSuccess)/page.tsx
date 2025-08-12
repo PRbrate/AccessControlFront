@@ -7,7 +7,7 @@ import { View, StyleSheet, SafeAreaView, Text } from "react-native";
 export default function userSucces() {
   useEffect(() => {
     const timer = setTimeout(() => {
-      router.push("/(auth)/signIn/page");
+      router.push("/(panel)/profile/page");
     }, 2000);
         return () => clearTimeout(timer);
 

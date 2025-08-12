@@ -10,13 +10,15 @@ export interface User {
 export interface UserLogin{
   userName: string;
   passWord: string;
+  logout: () => void;
+
 }
 
 export interface UserPost {
   name: string;
   userName: string;
   email: string;
-  password: string;
+  passWord: string;
   confirmPassword: string;
   postalCode: string;
   adress: string;

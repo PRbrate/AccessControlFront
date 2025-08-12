@@ -1,16 +1,18 @@
-import { User, UserLogin, UserPost } from "../types/userTypes";
-import { api } from "./api";
+import { UserLogin, UserPost } from "../types/userTypes";
 import { erroProps } from "../types/errorTypes";
 import axios from "axios";
 import { DataProps, useAuth } from "../context/AuthContext";
+import { AUTH_LOGIN, AUTH_REGISTER } from "../utils/endpoints";
+import api from "./api";
+
 
 export async function postUserData(
   user: UserPost
 ): Promise<boolean | erroProps> {
   try {
-    const response = await api.post("/Auth/register", {
+    const response = await api.post(AUTH_REGISTER, {
       email: user.email,
-      password: user.password,
+      password: user.passWord,
       confirmPassword: user.confirmPassword,
       name: user.name,
       userName: user.userName,
@@ -44,10 +46,9 @@ export async function postUserData(
 export async function loginUser(
   userlogin: UserLogin
 ): Promise<erroProps | DataProps> {
-  console.log("entrando na requisição");
   try {
     const response = await api.post(
-      "Auth/login",
+      AUTH_LOGIN,
       {
         userName: userlogin.userName,
         password: userlogin.passWord,

@@ -9,7 +9,7 @@ export interface DataProps {
 }
 
 interface AuthContextProps {
-  dataReturn?: DataProps | null;
+  dataReturn: DataProps | null;
   login: (dataprops: DataProps | null) => void;
   logout: () => void;
 }
@@ -22,6 +22,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   function login(dataprops: DataProps | null) {
     
     setData(dataprops);
+    
   }
   async function logout(){
     setData(null)

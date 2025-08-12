@@ -4,22 +4,23 @@ import { Link, router } from "expo-router";
 import { AntDesign, FontAwesome, MaterialIcons } from "@expo/vector-icons";
 import React, { useEffect, useState } from "react";
 import SpinIcon from "@/components/spin";
-import axios from "axios";
 import { useAuth } from "@/src/context/AuthContext";
-import { api } from "@/src/services/api";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import styles from "./styles";
 import { erroProps } from "@/src/types/errorTypes";
 import { loginUser } from "@/src/services/userService";
 
 export default function Login() {
-  const { login, dataReturn } = useAuth();
+  const { login, dataReturn, logout } = useAuth();
   const [userName, setUserName] = useState("");
   const [passWord, setPassWord] = useState("");
   const [erros, setErrors] = useState<erroProps>();
   const [returnError, setReturnError] = useState(false);
   const [onClickButton, setClicButton] = useState(false);
 
+  function delay(ms: number) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  }
   useEffect(() => {
     if (dataReturn != null || dataReturn != undefined)
       router.push("/(panel)/profile/page");
@@ -39,15 +40,15 @@ export default function Login() {
       return;
     }
 
-    const response = await loginUser({ userName, passWord });
+    const response = await loginUser({ userName, passWord, logout });
 
     if ("errors" in response) {
       setErrors(response);
       setReturnError(true);
       setClicButton(false);
     } else {
-      console.log(response);
       login(response);
+      await delay(2000)
       router.push("/(panel)/profile/page");
     }
     setClicButton(false);
