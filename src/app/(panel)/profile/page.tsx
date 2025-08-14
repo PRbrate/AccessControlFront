@@ -110,7 +110,7 @@ export default function Profile() {
         <View style={styles.containerInfo}>
           <Text style={styles.textContainerInfo}> Eventos</Text>
           <View style={styles.containerInfoCard}>
-            <Pressable onPress={getImageProfile}>
+            <Pressable onPress={() => router.navigate("/(events)/createEvent/page")}>
               <View style={styles.miniCard}>
                 <MaterialIcons
                   name="add-chart"
