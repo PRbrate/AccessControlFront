@@ -1,12 +1,11 @@
 import { StyleSheet } from "react-native";
-import Colors from "@/constants/colors";
 import colors from "@/constants/colors";
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingTop: 20,
-    backgroundColor: Colors.white,
+    backgroundColor: colors.white,
     paddingHorizontal: 20,
   },
   header: {
@@ -41,7 +40,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   ButtonCep: {
-    backgroundColor: Colors.principalBlue,
+    backgroundColor: colors.principalBlue,
     alignItems: "center",
     justifyContent: "center",
     alignContent: "center",

@@ -15,8 +15,9 @@ import { TextInput } from "react-native-paper";
 import CustomNumberInput from "@/components/NumberInput";
 import { pickImage } from "@/src/services/galeryService";
 import { PostEvent } from "@/src/services/eventService";
-import { postImage } from "@/src/services/clouflareService";
 import CustomModal from "@/components/Modal";
+import { postImagEvent } from "@/src/services/clouflareService";
+import { delay } from "@/src/services/delay";
 
 export default function EventCreate() {
   const [name, setName] = useState("");
@@ -32,6 +33,7 @@ export default function EventCreate() {
   const [participantes, setParticipantes] = useState("");
   const [clickButton, setClicButton] = useState(false);
   const [isVisible, setVisible] = useState(false);
+  const [podeclicar, setPodeClicar] = useState(true);
 
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
   const [date, setDate] = useState<Date>();
@@ -49,10 +51,6 @@ export default function EventCreate() {
     hideDatePicker();
   };
 
-  function delay(ms: number) {
-    return new Promise((resolve) => setTimeout(resolve, ms));
-  }
-
   async function getImage() {
     const returnpik = await pickImage();
     if (returnpik) {
@@ -62,48 +60,59 @@ export default function EventCreate() {
   }
 
   async function postEvent() {
-    setClicButton(true);
+    if (!podeclicar) {
+      setClicButton(true);
 
-    if (name == "" || participantes == "") {
-      setReturnError(true);
-      setErrors({
-        success: false,
-        errors: ["nome e participantes devem ser preenchidos"],
-      });
-      setClicButton(false);
-      return;
-    }
-
-    if (date) {
-      const response = await PostEvent({
-        name,
-        eventDate: date,
-        quantParticipants: parseInt(participantes),
-        description,
-        adress,
-        city,
-        state,
-        postalCode,
-      });
-
-      if (typeof response === "boolean") {
-        await delay(3000);
-        if (image && image !== "") await postImage({ asset: image });
-        setVisible(true);
-      } else {
+      if (name == "" || participantes == "") {
         setReturnError(true);
-        setErrors(null);
-        setErrors(response);
+        setErrors({
+          success: false,
+          errors: ["nome e participantes devem ser preenchidos"],
+        });
         setClicButton(false);
+        return;
       }
-    } else {
-      setErrors({
-        success: false,
-        errors: ["preencha a data do evento"],
-      });
-      setClicButton(false);
-      return;
+
+      if (date) {
+        const response = await PostEvent({
+          name,
+          eventDate: date,
+          quantParticipants: parseInt(participantes),
+          description,
+          adress,
+          city,
+          state,
+          postalCode,
+        });
+        if ("data" in response) {
+          await delay(500);
+          if (image && image !== "") {
+            const responseImg = await postImagEvent(
+              { asset: image },
+              response.data.data.id
+            );
+            if (typeof responseImg == "boolean") {
+              setVisible(true);
+            } else {
+              setErrors(responseImg);
+            }
+          }
+        } else {
+          setReturnError(true);
+          setErrors(null);
+          setErrors(response);
+          setClicButton(false);
+        }
+      } else {
+        setErrors({
+          success: false,
+          errors: ["preencha a data do evento"],
+        });
+        setClicButton(false);
+        return;
+      }
     }
+    setPodeClicar(true);
   }
 
   function closeModal() {
@@ -140,7 +149,7 @@ export default function EventCreate() {
               name="chevron-back-sharp"
               size={43}
               color={colors.principalBlue}
-              onPress={() => router.back()}
+              onPress={() => router.replace("/(panel)/profile/page")}
             />
           </Pressable>
           <Text style={styles.textHeader}> Crie Evento</Text>
@@ -181,6 +190,7 @@ export default function EventCreate() {
               flexDirection: "row",
               gap: 5,
               justifyContent: "space-between",
+              alignContent: "center",
             }}
           >
             <TextInput
@@ -303,7 +313,12 @@ export default function EventCreate() {
           }}
         />
 
-        <Pressable style={styles.buttonSend} onPress={postEvent}>
+        <Pressable
+          style={styles.buttonSend}
+          onPress={() => {
+            postEvent(), setPodeClicar(false);
+          }}
+        >
           {clickButton ? (
             <SpinIcon />
           ) : (

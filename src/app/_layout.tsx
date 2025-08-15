@@ -16,25 +16,13 @@ function MainLayout() {
   useEffect(() => {
     const timeout = setTimeout(() => {
       if (dataReturn?.accessToken) {
-
-        // router.replace("/(events)/createEvent/page");
-
-
-
         router.replace("/(panel)/profile/page");
         return;
       } else {
-        // router.replace("/(events)/createEvent/page");
-
-
-
-
         router.replace("/(auth)/signIn/page");
-        // router.replace("/(userSuccess)/page")
-        // router.replace("/(panel)/profile/page");
         return;
       }
-    }, 0);
+    }, 500);
 
     return () => clearTimeout(timeout);
   }, []);

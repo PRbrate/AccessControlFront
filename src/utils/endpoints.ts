@@ -1,3 +1,4 @@
+
 export const NEXT_PUBLIC_API_URL = "https://appeventformobile-hsedbwbsftgtg7b7.brazilsouth-01.azurewebsites.net/api/v1"
 export const AUTH_LOGIN = "Auth/login"
 export const AUTH_REGISTER = "/Auth/register";

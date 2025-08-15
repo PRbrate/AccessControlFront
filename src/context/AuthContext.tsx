@@ -1,5 +1,6 @@
-import { createContext, use, useContext, useState} from "react";
+import { createContext, useContext, useEffect, useState} from "react";
 import { User } from "../types/userTypes";
+import AsyncStorage from "@react-native-async-storage/async-storage"
 
 
 export interface DataProps {
@@ -19,13 +20,30 @@ export const AuthContext = createContext<AuthContextProps>({} as AuthContextProp
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [dataReturn, setData] = useState<DataProps | null>(null);
 
-  function login(dataprops: DataProps | null) {
+  useEffect(() =>{
+    async function getStorageData(){
+      const storageData = await AsyncStorage.getItem("@token-AccessControl-Login!")
+      
+      if(storageData){
+        setData(JSON.parse(storageData))
+      }
+    }
+    getStorageData()
+  },[])
+
+  async function login(dataprops: DataProps | null) {
     
     setData(dataprops);
-    
+    await AsyncStorage.setItem(
+      "@token-AccessControl-Login!",
+      JSON.stringify(dataprops)
+    );
+
   }
   async function logout(){
     setData(null)
+    await AsyncStorage.removeItem("@token-AccessControl-Login!");
+
   }
 
   return (

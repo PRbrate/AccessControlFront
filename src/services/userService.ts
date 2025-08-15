@@ -59,8 +59,6 @@ export async function loginUser(
     return response?.data.data;
   } catch (error: any) {
     if (axios.isCancel(error)) {
-      console.log("servidor fora do ar");
-
       return <erroProps>{
         success: false,
         errors: ["servidor fora do ar"],

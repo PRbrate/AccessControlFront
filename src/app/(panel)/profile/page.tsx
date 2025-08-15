@@ -27,11 +27,10 @@ export default function Profile() {
   const [photoProfile, setProtoProfile] = useState("");
 
   useEffect(() => {
-
     (async () => {
       setupApiToken(dataReturn?.accessToken);
       setupResponseInterceptor(logout);
-      setProtoProfile(await getImageProfile());
+      setProtoProfile((await getImageProfile()) || "");
     })();
   }, [dataReturn?.accessToken, logout]);
 
@@ -67,11 +66,7 @@ export default function Profile() {
             <Text>Hoje o dia está lindo, como vc está?</Text>
           </View>
           <Pressable onPress={logoutRedirect}>
-            {/* <Ionicons
-              name="person-circle-sharp"
-              size={50}
-              color={Colors.blackBlue}
-            /> */}
+
             <View style={styles.imageContain}>
               <Image
                 style={{
@@ -87,9 +82,8 @@ export default function Profile() {
             </View>
           </Pressable>
         </View>
-        <View style={styles.containerSeach}>
-          <FontAwesome name="search" size={20} color="black" />
-          <TextInput placeholder="Buscar por eventos criados" />
+        <View style={styles.premium}>
+          <Text style={{color: colors.white, fontWeight: "bold"}}>Seja Premium</Text>
         </View>
         <View style={styles.containerInfo}>
           <Text style={styles.textContainerInfo}> Próximo evento</Text>
@@ -110,7 +104,9 @@ export default function Profile() {
         <View style={styles.containerInfo}>
           <Text style={styles.textContainerInfo}> Eventos</Text>
           <View style={styles.containerInfoCard}>
-            <Pressable onPress={() => router.navigate("/(events)/createEvent/page")}>
+            <Pressable
+              onPress={() => router.navigate("/(events)/createEvent/page")}
+            >
               <View style={styles.miniCard}>
                 <MaterialIcons
                   name="add-chart"
@@ -124,16 +120,22 @@ export default function Profile() {
                 </Text>
               </View>
             </Pressable>
-            <View style={styles.miniCard}>
-              <MaterialCommunityIcons
-                name="clipboard-list-outline"
-                size={40}
-                color={Colors.white}
-              />
-              <Text style={[styles.textContainerInfo, { color: Colors.white }]}>
-                Seus Eventos
-              </Text>
-            </View>
+            <Pressable
+              onPress={() => router.navigate("/(events)/listEvets/page")}
+            >
+              <View style={styles.miniCard}>
+                <MaterialCommunityIcons
+                  name="clipboard-list-outline"
+                  size={40}
+                  color={Colors.white}
+                />
+                <Text
+                  style={[styles.textContainerInfo, { color: Colors.white }]}
+                >
+                  Seus Eventos
+                </Text>
+              </View>
+            </Pressable>
             <View style={styles.miniCard}>
               <MaterialIcons name="update" size={40} color={Colors.white} />
               <Text style={[styles.textContainerInfo, { color: Colors.white }]}>
@@ -189,19 +191,13 @@ const styles = StyleSheet.create({
     borderRadius: 100,
     justifyContent: "center",
     alignItems: "center",
-  },
-  containerSeach: {
-    flex: 1,
-    flexDirection: "row",
-    borderRadius: 100,
-    borderColor: Colors.gray,
-    paddingLeft: 15,
-    justifyContent: "flex-start",
+  },premium:{
+    backgroundColor: colors.green,
+    marginHorizontal: 10,
+    height:40,
     alignItems: "center",
-    gap: 10,
-    marginHorizontal: 25,
-    borderWidth: 1,
-    height: 45,
+    justifyContent: "center",
+    borderRadius: 10
   },
   containerInfo: {
     flex: 1,
