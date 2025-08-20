@@ -9,7 +9,7 @@ import { useState } from "react";
 import CustomTextInput from "@/components/TextInput";
 import SpinIcon from "@/components/spin";
 import getAdress from "@/src/services/getAddresService";
-import { erroProps } from "@/src/types/errorTypes";
+import { defaultErroProps } from "@/src/types/errorTypes";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { TextInput } from "react-native-paper";
 import CustomNumberInput from "@/components/NumberInput";
@@ -17,17 +17,35 @@ import { pickImage } from "@/src/services/galeryService";
 import { PostEvent } from "@/src/services/eventService";
 import CustomModal from "@/components/Modal";
 import { postImagEvent } from "@/src/services/clouflareService";
-import { delay } from "@/src/services/delay";
+import { delay } from "@/src/utils/delay";
+import { useFormState } from "@/src/utils/useStatePersolaize";
+import { AdressType } from "@/src/types/addressTypes";
 
 export default function EventCreate() {
+  const {
+    state: Adress,
+    updateField: setAdress,
+    setState: allSetAddress,
+  } = useFormState<AdressType>({
+    cep: "",
+    localidade: "",
+    logradouro: "",
+    uf: "",
+  });
+
+  const {
+    state: returnError,
+    updateField: defaultErroProps,
+    setState: erroState,
+  } = useFormState<defaultErroProps>({
+    errors: {
+      errors: [""],
+      success: false,
+    },
+    returnError: false,
+  });
   const [name, setName] = useState("");
   const [onClickButtonCep, setClicButtoncep] = useState(false);
-  const [postalCode, setCep] = useState("");
-  const [returnError, setReturnError] = useState(false);
-  const [erros, setErrors] = useState<erroProps | null>();
-  const [adress, setLogradouro] = useState("");
-  const [city, setCidade] = useState("");
-  const [state, setUF] = useState("");
   const [description, setDescription] = useState("");
   const [image, setImagem] = useState<string | null>(null);
   const [participantes, setParticipantes] = useState("");
@@ -64,8 +82,8 @@ export default function EventCreate() {
       setClicButton(true);
 
       if (name == "" || participantes == "") {
-        setReturnError(true);
-        setErrors({
+        defaultErroProps("returnError", true);
+        defaultErroProps("errors", {
           success: false,
           errors: ["nome e participantes devem ser preenchidos"],
         });
@@ -73,16 +91,13 @@ export default function EventCreate() {
         return;
       }
 
-      if (date) {
+      if (date && Adress) {
         const response = await PostEvent({
           name,
           eventDate: date,
           quantParticipants: parseInt(participantes),
           description,
-          adress,
-          city,
-          state,
-          postalCode,
+          Adress,
         });
         if ("data" in response) {
           await delay(500);
@@ -94,17 +109,17 @@ export default function EventCreate() {
             if (typeof responseImg == "boolean") {
               setVisible(true);
             } else {
-              setErrors(responseImg);
+              defaultErroProps("errors", responseImg);
             }
+          } else {
+            setVisible(true);
           }
         } else {
-          setReturnError(true);
-          setErrors(null);
-          setErrors(response);
-          setClicButton(false);
+          defaultErroProps("returnError", true);
+          defaultErroProps("errors", response);
         }
       } else {
-        setErrors({
+        defaultErroProps("errors", {
           success: false,
           errors: ["preencha a data do evento"],
         });
@@ -121,16 +136,14 @@ export default function EventCreate() {
   }
 
   async function getAddres() {
-    const returnCep = await getAdress(postalCode);
+    const returnCep = await getAdress(Adress ? Adress.cep : "");
     setClicButtoncep(true);
 
     if ("errors" in returnCep) {
-      setReturnError(true);
-      setErrors(returnCep);
+      defaultErroProps("returnError", true);
+      defaultErroProps("errors", returnCep);
     } else {
-      setLogradouro(returnCep.logradouro);
-      setCidade(returnCep.localidade);
-      setUF(returnCep.uf);
+      allSetAddress(returnCep);
     }
 
     setClicButtoncep(false);
@@ -227,20 +240,20 @@ export default function EventCreate() {
           <View style={styles.containerCep}>
             <CustomTextInput
               label="UF"
-              value={state}
-              onChangeText={setUF}
+              value={Adress?.uf}
+              onChangeText={(e) => setAdress("uf", e)}
               widthlabel={20}
             />
             <CustomTextInput
               label="Cep"
-              value={postalCode}
-              onChangeText={setCep}
+              value={Adress?.cep}
+              onChangeText={(e) => setAdress("cep", e)}
               widthlabel={50}
             />
             <Pressable
               style={styles.ButtonCep}
               onPress={() => {
-                getAddres(), setReturnError(false);
+                getAddres(), defaultErroProps("returnError", false);
               }}
             >
               {onClickButtonCep ? (
@@ -262,7 +275,7 @@ export default function EventCreate() {
                   paddingTop: 0,
                 }}
               >
-                {erros?.errors[0]}
+                {returnError.errors?.errors[0]}
               </Text>
             </View>
           ) : (
@@ -270,14 +283,14 @@ export default function EventCreate() {
           )}
           <CustomTextInput
             label="Endereço"
-            value={adress}
-            onChangeText={setLogradouro}
+            value={Adress?.logradouro}
+            onChangeText={(e) => setAdress("logradouro", e)}
             widthlabel={100}
           />
           <CustomTextInput
             label="Cidade"
-            value={city}
-            onChangeText={setCidade}
+            value={Adress?.localidade}
+            onChangeText={(e) => setAdress("localidade", e)}
             widthlabel={100}
           />
           <View>

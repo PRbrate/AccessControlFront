@@ -5,7 +5,7 @@ import {
   photoEvent,
   PostEventProps,
 } from "../types/EventTypes";
-import { EVENT_DOMAIN } from "../utils/endpoints";
+import { EVENT_DOMAIN, EVENT_DOMAIN_NEXT_EVENT } from "../utils/endpoints";
 import api from "./api";
 
 export async function PostEvent(
@@ -21,10 +21,10 @@ export async function PostEvent(
         available: true,
         image: "",
         description: eventProps.description,
-        adress: eventProps.adress,
-        city: eventProps.city,
-        state: eventProps.state,
-        postalCode: eventProps.postalCode,
+        adress: eventProps.Adress.logradouro,
+        city: eventProps.Adress.localidade,
+        state: eventProps.Adress.uf,
+        postalCode: eventProps.Adress.cep,
       }
     );
     return response.data;
@@ -69,6 +69,46 @@ export async function PostImageEventService(
         success: false,
         errors: message,
       };
+    }
+  }
+}
+
+
+export async function GetListEvent(): Promise<EventReturnProps[] | erroProps> {
+  try {
+    const response = await api.get(EVENT_DOMAIN);
+
+    return response.data;
+  } catch (error: any) {
+    if (error.response) {
+      const message = Object.values(error.response.data.errors);
+      return <erroProps>{
+        success: false,
+        errors: message,
+      };
+    } else {
+      const message = Object.values(error.response.data.errors);
+      return <erroProps>{
+        success: false,
+        errors: message,
+      };
+    }
+  }
+}
+
+export async function GetNextEvent(): Promise<EventReturnProps | null> {
+  try {
+    const response = await api.get(EVENT_DOMAIN_NEXT_EVENT);
+
+    return response.data;
+  } catch (error: any) {
+    if (error.response) {
+      const message = Object.values(error.response.data.errors);
+      return null
+      ;
+    } else {
+      const message = Object.values(error.response.data.errors);
+      return null;
     }
   }
 }

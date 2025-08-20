@@ -5,7 +5,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import styles from "./styles";
 import { useEffect, useState } from "react";
-import { erroProps } from "@/src/types/errorTypes";
+import { defaultErroProps } from "@/src/types/errorTypes";
 import getAdress from "@/src/services/getAddresService";
 import { loginUser, postUserData } from "@/src/services/userService";
 import SpinIcon from "@/components/spin";
@@ -15,25 +15,45 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import colors from "@/constants/colors";
 import { postImage } from "@/src/services/clouflareService";
 import ConfirmEmail from "./confirmEmail/page";
+import { useFormState } from "@/src/utils/useStatePersolaize";
+import { UserPost } from "@/src/types/userTypes";
+import { AdressType } from "@/src/types/addressTypes";
 
 export default function Register() {
   const { login, dataReturn, logout } = useAuth();
 
-  const [name, setName] = useState("");
-  const [userName, setUserName] = useState("");
-  const [email, setEmail] = useState("");
-  const [passWord, setPassWord] = useState("");
-  const [confirmPassword, setConfirm] = useState("");
-  const [postalCode, setCep] = useState("");
-  const [adress, setLogradouro] = useState("");
-  const [city, setCidade] = useState("");
-  const [state, setUF] = useState("");
+  const {
+    state: Adress,
+    updateField: setAdress,
+    setState: allSetAddress,
+  } = useFormState<AdressType>({
+    cep: "",
+    localidade: "",
+    logradouro: "",
+    uf: "",
+  });
 
-  const [erros, setErrors] = useState<erroProps | null>();
-  const [returnError, setReturnError] = useState(false);
+  const { state: userCadastro, updateField: setCadastro } =
+    useFormState<UserPost>({
+      userName: "",
+      email: "",
+      name: "",
+      passWord: "",
+      confirmPassword: "",
+      addres: Adress ? Adress : {cep: "", localidade: "", uf: "", logradouro: ""},
+    });
+
+  const { state: returnError, updateField: defaultErroProps, setState: erroState} =
+    useFormState<defaultErroProps>({
+      errors: {
+        errors: [""],
+        success: false,
+      },
+      returnError: false,
+    });
+
   const [onClickButton, setClicButton] = useState(false);
   const [onClickButtonCep, setClicButtoncep] = useState(false);
-  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
   const [verifyEmail, setverifyEmail] = useState(false);
 
   const [image, setImagem] = useState<string | null>(null);
@@ -52,48 +72,53 @@ export default function Register() {
   }
 
   async function getAddres() {
-    const returnCep = await getAdress(postalCode);
+    const returnCep = await getAdress(Adress? Adress.cep : "");
     setClicButtoncep(true);
 
     if ("errors" in returnCep) {
-      setReturnError(true);
-      setErrors(returnCep);
+      defaultErroProps("returnError", true);
+      defaultErroProps("errors", returnCep);
     } else {
-      setLogradouro(returnCep.logradouro);
-      setCidade(returnCep.localidade);
-      setUF(returnCep.uf);
+      allSetAddress(returnCep);
     }
 
     setClicButtoncep(false);
   }
 
-    function delay(ms: number) {
-      return new Promise((resolve) => setTimeout(resolve, ms));
-    }
+  function delay(ms: number) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  }
   async function postUser() {
     setClicButton(true);
 
-    if (name == "" || userName == "" || email == "" || passWord == "") {
-      setReturnError(true);
-      setErrors({
+    if(userCadastro){
+    if (
+      userCadastro.name == "" ||
+      userCadastro.userName == "" ||
+      userCadastro.email == "" ||
+      userCadastro.passWord == ""
+    ) {
+      defaultErroProps("returnError", true);
+      defaultErroProps("errors", {
         success: false,
         errors: ["nome, usuário, email e senha devem ser preenchidos"],
       });
+
       setClicButton(false);
       return;
     }
-    if (emailRegex.test(email) == false) {
-      setReturnError(true);
-      setErrors({
+    if (/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(userCadastro.email) == false) {
+      defaultErroProps("returnError", true);
+      defaultErroProps("errors", {
         success: false,
         errors: ["email com formato inválido"],
       });
       setClicButton(false);
       return;
     }
-    if (passWord != confirmPassword) {
-      setReturnError(true);
-      setErrors({
+    if (userCadastro.passWord != userCadastro.confirmPassword) {
+      defaultErroProps("returnError", true);
+      defaultErroProps("errors", {
         success: false,
         errors: ["as senhas não conferem"],
       });
@@ -101,33 +126,29 @@ export default function Register() {
       return;
     }
 
-    const response = await postUserData({
-      name,
-      userName,
-      email,
-      passWord,
-      confirmPassword,
-      postalCode,
-      adress,
-      city,
-      state,
-    });
+    const response = await postUserData(userCadastro);
 
     if (typeof response === "boolean") {
-      const user = await loginUser({ userName, passWord, logout });
+      const user = await loginUser({
+        userName: userCadastro.userName,
+        passWord: userCadastro.passWord,
+        logout,
+      });
       if ("accessToken" in user) {
         await login(user);
 
         await delay(3000);
-        if(image && image !== "") await postImage({asset: image})
+
+        if (image && image !== "") await postImage({ asset: image });
         router.push("/(userSuccess)/page");
       }
     } else {
-      setReturnError(true);
-      setErrors(null);
-      setErrors(response);
+      defaultErroProps("returnError", true);
+      defaultErroProps("errors", { errors: [""], success: false });
+      defaultErroProps("errors", response);
+
       setClicButton(false);
-    }
+    }}
   }
 
   return (
@@ -177,9 +198,9 @@ export default function Register() {
               <TextInput
                 placeholder="Digite seu Nome"
                 style={styles.input}
-                value={name}
-                onChangeText={setName}
-                onChange={() => [setErrors(null), setReturnError(false)]}
+                value={userCadastro?.name}
+                onChangeText={(e) => setCadastro("name", e)}
+                onChange={() => [erroState(null)]}
               />
             </View>
 
@@ -188,9 +209,9 @@ export default function Register() {
               <TextInput
                 placeholder="Digite seu nome de usuário"
                 style={styles.input}
-                value={userName}
-                onChangeText={setUserName}
-                onChange={() => [setErrors(null), setReturnError(false)]}
+                value={userCadastro?.userName}
+                onChangeText={(e) => setCadastro("userName", e)}
+                onChange={() => [erroState(null)]}
               />
             </View>
 
@@ -199,9 +220,9 @@ export default function Register() {
               <TextInput
                 placeholder="exemple@exemple.com"
                 style={styles.input}
-                value={email}
-                onChangeText={setEmail}
-                onChange={() => [setErrors(null), setReturnError(false)]}
+                value={userCadastro?.email}
+                onChangeText={(e) => setCadastro("email", e)}
+                onChange={() => [erroState(null)]}
               />
             </View>
 
@@ -212,9 +233,9 @@ export default function Register() {
                   placeholder="Sua Senha"
                   secureTextEntry
                   style={styles.labelPassWord}
-                  value={passWord}
-                  onChangeText={setPassWord}
-                  onChange={() => [setErrors(null), setReturnError(false)]}
+                  value={userCadastro?.passWord}
+                  onChangeText={(e) => setCadastro("passWord", e)}
+                  onChange={() => [erroState(null)]}
                 />
               </View>
               <View style={styles.containerPass}>
@@ -223,9 +244,9 @@ export default function Register() {
                   placeholder="Confirme sua Senha"
                   secureTextEntry
                   style={styles.labelPassWord}
-                  value={confirmPassword}
-                  onChangeText={setConfirm}
-                  onChange={() => [setErrors(null), setReturnError(false)]}
+                  value={userCadastro?.confirmPassword}
+                  onChangeText={(e) => setCadastro("confirmPassword", e)}
+                  onChange={() => [erroState(null)]}
                 />
               </View>
             </View>
@@ -241,7 +262,7 @@ export default function Register() {
                     marginBottom: 3,
                   }}
                 >
-                  {erros?.errors}
+                  {returnError.errors?.errors}
                 </Text>
               </View>
             )}
@@ -253,8 +274,8 @@ export default function Register() {
                 <TextInput
                   placeholder="Digite seu Cep"
                   style={styles.inputCep}
-                  value={postalCode}
-                  onChangeText={setCep}
+                  value={Adress?.cep}
+                  onChangeText={(e) => setAdress("cep", e)}
                 />
               </View>
               <Pressable style={styles.ButtonCep} onPress={getAddres}>
@@ -271,8 +292,8 @@ export default function Register() {
               <TextInput
                 placeholder="Endereço"
                 style={styles.input}
-                value={adress}
-                onChangeText={setLogradouro}
+                value={Adress?.logradouro}
+                onChangeText={(e) => setAdress("logradouro", e)}
               />
             </View>
 
@@ -281,16 +302,16 @@ export default function Register() {
                 <TextInput
                   placeholder="Cidade"
                   style={styles.inputCep}
-                  value={city}
-                  onChangeText={setCidade}
+                  value={Adress?.localidade}
+                  onChangeText={(e) => setAdress("localidade", e)}
                 />
               </View>
               <View style={styles.ViewAddress}>
                 <TextInput
                   placeholder="UF"
                   style={styles.inputCep}
-                  value={state}
-                  onChangeText={setUF}
+                  value={Adress?.uf}
+                  onChangeText={(e) => setAdress("uf", e)}
                 />
               </View>
             </View>

@@ -1,3 +1,5 @@
+import { AdressType } from "./addressTypes";
+
 export interface User {
   id: string;
   contaId: number;
@@ -11,7 +13,6 @@ export interface UserLogin{
   userName: string;
   passWord: string;
   logout: () => void;
-
 }
 
 export interface UserPost {
@@ -20,8 +21,5 @@ export interface UserPost {
   email: string;
   passWord: string;
   confirmPassword: string;
-  postalCode: string;
-  adress: string;
-  city: string;
-  state: string;
+  addres: AdressType;
 }

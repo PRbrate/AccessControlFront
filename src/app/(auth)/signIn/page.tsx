@@ -7,20 +7,30 @@ import SpinIcon from "@/components/spin";
 import { useAuth } from "@/src/context/AuthContext";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import styles from "./styles";
-import { erroProps } from "@/src/types/errorTypes";
+import { defaultErroProps} from "@/src/types/errorTypes";
 import { loginUser } from "@/src/services/userService";
+import { delay } from "@/src/utils/delay";
+import { useFormState } from "@/src/utils/useStatePersolaize";
+import { UserLogin } from "@/src/types/userTypes";
 
 export default function Login() {
   const { login, dataReturn, logout } = useAuth();
-  const [userName, setUserName] = useState("");
-  const [passWord, setPassWord] = useState("");
-  const [erros, setErrors] = useState<erroProps>();
-  const [returnError, setReturnError] = useState(false);
   const [onClickButton, setClicButton] = useState(false);
 
-  function delay(ms: number) {
-    return new Promise((resolve) => setTimeout(resolve, ms));
-  }
+  const {state: returnError, updateField: defaultErroProps} = useFormState<defaultErroProps>({
+    errors: {
+      errors: [""],
+      success: false
+    },
+    returnError: false
+  }) 
+
+  const { state: userLogin, updateField } = useFormState<UserLogin>({
+    userName: "",
+    passWord: "",
+    logout,
+  });
+
   useEffect(() => {
     if (dataReturn != null || dataReturn != undefined)
       router.push("/(panel)/profile/page");
@@ -29,9 +39,11 @@ export default function Login() {
   async function getUser() {
     setClicButton(true);
 
-    if (userName.length < 2 || passWord.length < 8) {
-      setReturnError(true);
-      setErrors({
+    if (userLogin.userName.length < 2 || userLogin.passWord.length < 8) {
+
+      defaultErroProps("returnError", true);
+
+      defaultErroProps("errors", {
         success: false,
         errors: ["Senha ou Username incorretos"],
       });
@@ -40,11 +52,13 @@ export default function Login() {
       return;
     }
 
-    const response = await loginUser({ userName, passWord, logout });
+    const response = await loginUser(userLogin);
 
     if ("errors" in response) {
-      setErrors(response);
-      setReturnError(true);
+
+      defaultErroProps("returnError", true);
+
+      defaultErroProps("errors", response)
       setClicButton(false);
     } else {
       login(response);
@@ -80,8 +94,8 @@ export default function Login() {
               <TextInput
                 style={styles.inputlabel}
                 placeholder="User"
-                value={userName}
-                onChangeText={setUserName}
+                value={userLogin.userName}
+                onChangeText={(e) => updateField("userName", e)}
               />
             </View>
           </View>
@@ -94,8 +108,8 @@ export default function Login() {
                 style={styles.inputlabel}
                 placeholder="**********"
                 secureTextEntry
-                value={passWord}
-                onChangeText={setPassWord}
+                value={userLogin.passWord}
+                onChangeText={(e) => updateField("passWord", e)}
               />
             </View>
           </View>
@@ -108,7 +122,7 @@ export default function Login() {
             )}
           </Pressable>
 
-          {returnError ? (
+          {returnError.returnError ? (
             <View>
               <Text
                 style={{
@@ -118,7 +132,7 @@ export default function Login() {
                   paddingTop: 0,
                 }}
               >
-                {erros?.errors[0]}
+                {returnError.errors?.errors[0]}
               </Text>
             </View>
           ) : (

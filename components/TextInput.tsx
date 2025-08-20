@@ -4,7 +4,7 @@ import { TextInput } from "react-native-paper";
 
 export interface CustomInputProps {
   label: string;
-  value: string;
+  value?: string;
   widthlabel: number
   onChangeText: (text: string) => void;
 }

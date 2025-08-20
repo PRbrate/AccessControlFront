@@ -5,8 +5,22 @@ import { router } from "expo-router";
 import { FontAwesome, Ionicons, MaterialIcons } from "@expo/vector-icons";
 import styles from "./styles";
 import CustomCardEvent from "@/components/cardInfoEvent";
+import { useEffect, useState } from "react";
+import { EventReturnProps } from "@/src/types/EventTypes";
+import { GetListEvent } from "@/src/services/eventService";
 
 export default function ListEvents() {
+  const [eventsreturn, setEventReturn] = useState<EventReturnProps[]>([]);
+
+  useEffect(() => {
+    (async () => {
+      const events = await GetListEvent();
+      if ("errors" in events) {
+      } else {
+        setEventReturn(events);
+      }
+    })();
+  }, []);
   return (
     <KeyboardAwareScrollView
       style={{ flex: 1 }}
@@ -55,48 +69,26 @@ export default function ListEvents() {
           </View>
         </Pressable>
 
-        <CustomCardEvent
-          cidade="Governador mangacity"
-          eventName="O melhor negão"
-          url="vai vir"
-          disponivel={true}
-          uf="Ba"
-        />
-        <CustomCardEvent
-          cidade="Governador mangacity"
-          eventName="O melhor negão"
-          url="vai vir"
-          disponivel={true}
-          uf="Ba"
-        />
-        <CustomCardEvent
-          cidade="Governador mangacity"
-          eventName="O melhor negão"
-          url="vai vir"
-          disponivel={true}
-          uf="Ba"
-        />
-        <CustomCardEvent
-          cidade="Governador mangacity"
-          eventName="O melhor negão"
-          url="vai vir"
-          disponivel={true}
-          uf="Ba"
-        />
-        <CustomCardEvent
-          cidade="Governador mangacity"
-          eventName="O melhor negão"
-          url="vai vir"
-          disponivel={true}
-          uf="Ba"
-        />
-        <CustomCardEvent
-          cidade="Governador mangacity"
-          eventName="O melhor negão"
-          url="vai vir"
-          disponivel={true}
-          uf="Ba"
-        />
+        {eventsreturn.map((eventId) => (
+          <View key={eventId.id}>
+            <Pressable
+              onPress={() =>
+                router.push({
+                  pathname: "/(events)/infoEvent/page",
+                  params: { eventReturnProps: JSON.stringify(eventId) },
+                })
+              }
+            >
+              <CustomCardEvent
+                cidade={eventId.city}
+                eventName={eventId.name}
+                url={eventId.image}
+                disponivel={eventId.available}
+                uf={eventId.state}
+              />
+            </Pressable>
+          </View>
+        ))}
       </View>
     </KeyboardAwareScrollView>
   );

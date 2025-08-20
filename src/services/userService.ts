@@ -1,7 +1,7 @@
 import { UserLogin, UserPost } from "../types/userTypes";
 import { erroProps } from "../types/errorTypes";
 import axios from "axios";
-import { DataProps, useAuth } from "../context/AuthContext";
+import { DataProps} from "../context/AuthContext";
 import { AUTH_LOGIN, AUTH_REGISTER } from "../utils/endpoints";
 import api from "./api";
 
@@ -16,10 +16,10 @@ export async function postUserData(
       confirmPassword: user.confirmPassword,
       name: user.name,
       userName: user.userName,
-      adress: user.adress,
-      city: user.city,
-      state: user.state,
-      postalCode: user.postalCode,
+      adress: user.addres.logradouro,
+      city: user.addres.localidade,
+      state: user.addres.uf,
+      postalCode: user.addres.cep,
       photo: "",
     });
 

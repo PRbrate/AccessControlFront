@@ -6,3 +6,4 @@ export const CLOUDFLARE_UPLOAD = "/Cloudflare/urlUpload";
 export const CLOUDFLARE_UPLOAD_EVENT = "/Cloudflare/urlUploadEvent";
 export const CLOUDFLARE_GET_PROFILE = "/Cloudflare/urlget";
 export const EVENT_DOMAIN = "/EventDomain";
+export const EVENT_DOMAIN_NEXT_EVENT = "/EventDomain/NextEvent";

@@ -4,7 +4,6 @@ import {
   SafeAreaView,
   ScrollView,
   Image,
-  TextInput,
   Platform,
   StatusBar,
   StyleSheet,
@@ -12,7 +11,6 @@ import {
 } from "react-native";
 import Colors from "@/constants/colors";
 import Entypo from "@expo/vector-icons/Entypo";
-import FontAwesome from "@expo/vector-icons/FontAwesome";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useAuth } from "@/src/context/AuthContext";
@@ -21,16 +19,20 @@ import colors from "@/constants/colors";
 import { useEffect, useState } from "react";
 import { setupApiToken, setupResponseInterceptor } from "@/src/services/api";
 import { getImageProfile } from "@/src/services/clouflareService";
+import { EventReturnProps } from "@/src/types/EventTypes";
+import { GetNextEvent } from "@/src/services/eventService";
 
 export default function Profile() {
   const { dataReturn, logout } = useAuth();
   const [photoProfile, setProtoProfile] = useState("");
+  const [event, setEvent] = useState<EventReturnProps | null>();
 
   useEffect(() => {
     (async () => {
       setupApiToken(dataReturn?.accessToken);
       setupResponseInterceptor(logout);
       setProtoProfile((await getImageProfile()) || "");
+      setEvent(await GetNextEvent());
     })();
   }, [dataReturn?.accessToken, logout]);
 
@@ -66,7 +68,6 @@ export default function Profile() {
             <Text>Hoje o dia está lindo, como vc está?</Text>
           </View>
           <Pressable onPress={logoutRedirect}>
-
             <View style={styles.imageContain}>
               <Image
                 style={{
@@ -83,22 +84,62 @@ export default function Profile() {
           </Pressable>
         </View>
         <View style={styles.premium}>
-          <Text style={{color: colors.white, fontWeight: "bold"}}>Seja Premium</Text>
+          <Text style={{ color: colors.white, fontWeight: "bold" }}>
+            Seja Premium
+          </Text>
         </View>
         <View style={styles.containerInfo}>
           <Text style={styles.textContainerInfo}> Próximo evento</Text>
           <View style={styles.cardInteratible}>
-            <Image
-              style={{
-                width: "100%",
-                height: "100%",
-                resizeMode: "cover",
-                borderRadius: 10,
-              }}
-              source={{
-                uri: "https://www.organizandoeventos.com.br/artigos/seguro-eventos-1.jpg",
-              }}
-            />
+            {event != null ? (
+              <Pressable
+                onPress={() =>
+                  router.push({
+                    pathname: "/(events)/infoEvent/page",
+                    params: { eventReturnProps: JSON.stringify(event) },
+                  })
+                }
+              >
+                <Image
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    resizeMode: "cover",
+                    borderRadius: 10,
+                  }}
+                  source={{
+                    uri: event.image,
+                  }}
+                />
+              </Pressable>
+            ) : (
+              <Pressable
+                onPress={() => router.navigate("/(events)/createEvent/page")}
+                style={{ width: "100%", height: "100%" }}
+              >
+                <View
+                  style={{
+                    backgroundColor: colors.secundatyBlue,
+                    width: "100%",
+                    height: "100%",
+                    borderRadius: 10,
+                    justifyContent: "center",
+                    alignItems: "center"
+                  }}
+                >
+                  <MaterialIcons
+                    name="add-chart"
+                    size={40}
+                    color={Colors.white}
+                  />
+                  <Text
+                    style={[styles.textContainerInfo, { color: Colors.white }]}
+                  >
+                    Criar Novo Evento
+                  </Text>
+                </View>
+              </Pressable>
+            )}
           </View>
         </View>
         <View style={styles.containerInfo}>
@@ -191,13 +232,14 @@ const styles = StyleSheet.create({
     borderRadius: 100,
     justifyContent: "center",
     alignItems: "center",
-  },premium:{
+  },
+  premium: {
     backgroundColor: colors.green,
     marginHorizontal: 10,
-    height:40,
+    height: 40,
     alignItems: "center",
     justifyContent: "center",
-    borderRadius: 10
+    borderRadius: 10,
   },
   containerInfo: {
     flex: 1,
