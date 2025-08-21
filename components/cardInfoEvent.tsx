@@ -1,4 +1,4 @@
-import colors from "@/constants/colors";
+import colors from "@/constants/Colors";
 import {  } from "@/src/services/clouflareService";
 import { useEffect, useState } from "react";
 import { View, Text, StyleSheet, Image } from "react-native";

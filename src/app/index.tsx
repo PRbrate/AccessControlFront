@@ -1,6 +1,6 @@
 import SpinIcon from "@/components/spin";
-import colors from "@/constants/colors";
-import Colors from "@/constants/colors";
+import colors from "@/constants/Colors";
+import Colors from "@/constants/Colors";
 import { View, StyleSheet, SafeAreaView, Image, Text } from "react-native";
 import * as Font from "expo-font"
 import { useEffect, useState } from "react";

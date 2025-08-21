@@ -1,5 +1,5 @@
 import SpinIcon from "@/components/spin";
-import colors from "@/constants/colors";
+import colors from "@/constants/Colors";
 import { useState } from "react";
 import {
   View,

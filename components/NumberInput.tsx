@@ -1,4 +1,4 @@
-import colors from "@/constants/colors";
+import colors from "@/constants/Colors";
 import React from "react";
 import { TextInput } from "react-native-paper";
 import { CustomInputProps } from "./TextInput";

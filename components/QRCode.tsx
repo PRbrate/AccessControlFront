@@ -1,5 +1,5 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import Colors from "@/constants/colors";
+import Colors from "@/constants/Colors";
 import { StyleSheet, View } from "react-native";
 
 export default function QRCodeITem({ color, size }: any) {

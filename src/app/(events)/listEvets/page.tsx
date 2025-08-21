@@ -1,6 +1,6 @@
 import { View, Text, Pressable, TextInput } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import colors from "@/constants/colors";
+import colors from "@/constants/Colors";
 import { router } from "expo-router";
 import { FontAwesome, Ionicons, MaterialIcons } from "@expo/vector-icons";
 import styles from "./styles";

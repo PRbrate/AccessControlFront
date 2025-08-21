@@ -2,7 +2,7 @@ import { Pressable, Text, View, Image } from "react-native";
 import styles from "./style";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { Ionicons } from "@expo/vector-icons";
-import colors from "@/constants/colors";
+import colors from "@/constants/Colors";
 import { router } from "expo-router";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useState } from "react";

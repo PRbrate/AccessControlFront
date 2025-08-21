@@ -1,5 +1,5 @@
-import colors from "@/constants/colors";
-import Colors from "@/constants/colors";
+import colors from "@/constants/Colors";
+import Colors from "@/constants/Colors";
 import { router } from "expo-router";
 import { useEffect } from "react";
 import { View, StyleSheet, SafeAreaView, Text } from "react-native";

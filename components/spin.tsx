@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import { Animated, Easing, View } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
-import colors from "@/constants/colors";
+import colors from "@/constants/Colors";
 
 const SpinIcon = () => {
   const rotateAnim = useRef(new Animated.Value(0)).current;

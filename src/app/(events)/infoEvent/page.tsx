@@ -3,7 +3,7 @@ import { router, useLocalSearchParams } from "expo-router";
 import { View, Text, ImageBackground, Pressable } from "react-native";
 import styles from "./styles";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
-import colors from "@/constants/colors";
+import colors from "@/constants/Colors";
 import { useState } from "react";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import QrCodeGenerateImage from "@/components/qrCodeGenerate";

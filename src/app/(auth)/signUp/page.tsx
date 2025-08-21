@@ -1,4 +1,4 @@
-import Colors from "@/constants/colors";
+import Colors from "@/constants/Colors";
 import { View, Text, TextInput, Pressable, Image } from "react-native";
 import { router } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
@@ -12,7 +12,7 @@ import SpinIcon from "@/components/spin";
 import { useAuth } from "@/src/context/AuthContext";
 import { pickImage } from "@/src/services/galeryService";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import colors from "@/constants/colors";
+import colors from "@/constants/Colors";
 import { postImage } from "@/src/services/clouflareService";
 import ConfirmEmail from "./confirmEmail/page";
 import { useFormState } from "@/src/utils/useStatePersolaize";

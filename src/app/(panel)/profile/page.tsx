@@ -9,13 +9,13 @@ import {
   StyleSheet,
   Pressable,
 } from "react-native";
-import Colors from "@/constants/colors";
+import Colors from "@/constants/Colors";
 import Entypo from "@expo/vector-icons/Entypo";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useAuth } from "@/src/context/AuthContext";
 import { router } from "expo-router";
-import colors from "@/constants/colors";
+import colors from "@/constants/Colors";
 import { useEffect, useState } from "react";
 import { setupApiToken, setupResponseInterceptor } from "@/src/services/api";
 import { getImageProfile } from "@/src/services/clouflareService";

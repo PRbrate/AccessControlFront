@@ -1,5 +1,5 @@
 import QRCodeITem from "@/components/QRCode";
-import colors from "@/constants/colors";
+import colors from "@/constants/Colors";
 import { useAuth } from "@/src/context/AuthContext";
 import { FontAwesome } from "@expo/vector-icons";
 import { Redirect, Tabs } from "expo-router";
